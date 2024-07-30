@@ -1,10 +1,25 @@
 from fastapi import FastAPI
 from .routers import auth, operations, balance
 from .database import init_db
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 init_db()
+
+# CORS config
+origins = [
+    "http://localhost:3000",
+    # TODO
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():

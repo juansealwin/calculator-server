@@ -28,10 +28,10 @@ def create_operation(
     if operation.type not in OPERATION_COSTS:
         raise HTTPException(status_code=400, detail="Invalid operation type")
     
-    operation.cost = OPERATION_COSTS[operation.type]
+    operation_cost = OPERATION_COSTS[operation.type]
 
     # Verify enough money to make the operation
-    if not current_user.balances or current_user.balances[0].amount < operation.cost:
+    if not current_user.balance or current_user.balance.amount < operation_cost:
         raise HTTPException(status_code=400, detail="Insufficient balance")
 
     if operation.type == "addition":
@@ -60,11 +60,11 @@ def create_operation(
         result = response.text.strip()
 
     # Update user balance
-    current_user.balances[0].amount -= operation.cost
+    current_user.balance.amount -= operation_cost
     db.add(current_user)
     
     # Create new Operation and write in db
-    new_operation = Operation(type=operation.type, cost=operation.cost)
+    new_operation = Operation(type=operation.type, cost=operation_cost)
     db.add(new_operation)
     db.commit()
     db.refresh(new_operation)
@@ -75,14 +75,18 @@ def create_operation(
         user_id=current_user.id,
         # For numeric operations
         amount=result if isinstance(result, (int, float)) else 0,
-        user_balance=current_user.balances[0].amount,
+        user_balance=current_user.balance.amount,
         operation_response=str(result)
     )
     db.add(record)
     db.commit()
     db.refresh(record)
     
-    return new_operation
+    return {
+        "id": new_operation.id,
+        "cost": operation_cost,
+        "result": str(result)
+    }
 
 @router.get("/records", response_model=List[RecordOut])
 def read_records(

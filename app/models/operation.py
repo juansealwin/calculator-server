@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import relationship
 from ..database import Base
 from .user import User
 
@@ -20,6 +19,3 @@ class Record(Base):
     user_balance = Column(Float)
     operation_response = Column(String)
     date = Column(String)
-
-    operation = relationship("Operation")
-    user = relationship("User")

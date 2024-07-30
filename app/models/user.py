@@ -10,4 +10,4 @@ class User(Base):
     password = Column(String)
     status = Column(Boolean, default=True)
 
-    balances = relationship("Balance", back_populates="owner") 
+    balance = relationship("Balance", uselist=False, back_populates="owner") 

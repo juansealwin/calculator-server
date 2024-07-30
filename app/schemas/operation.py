@@ -1,18 +1,21 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class OperationBase(BaseModel):
-    type: str
-    cost: float
-
-class OperationCreate(OperationBase):
     pass
 
-class OperationOut(OperationBase):
+class OperationCreate(BaseModel):
+    type: str
+    amount1: Optional[float] = None
+    amount2: Optional[float] = None
+
+class OperationOut(BaseModel):
     id: int
+    result: str
+    cost: float 
 
     class Config:
         from_attributes = True
-
 
 class RecordOut(BaseModel):
     id: int

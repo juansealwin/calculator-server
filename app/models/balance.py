@@ -9,4 +9,4 @@ class Balance(Base):
     amount = Column(Float, default=0.0)
     
     user_id = Column(Integer, ForeignKey('users.id'))
-    owner = relationship("User", back_populates="balances")
+    owner = relationship("User", back_populates="balance")

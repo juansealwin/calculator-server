@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..schemas.user import UserCreate, UserOut
 from ..models.user import User
+from ..models.balance import Balance
 from ..database import get_db
 from ..utils import get_password_hash, verify_password, create_access_token
 
@@ -21,6 +22,11 @@ def register(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    initial_balance = Balance(user_id=new_user.id, amount=100.0)
+    db.add(initial_balance)
+    db.commit()
+    db.refresh(initial_balance)
     
     return new_user
 
@@ -38,4 +44,12 @@ def login(
         )
 
     access_token = create_access_token(data={"sub": db_user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "accessToken": access_token, 
+        "tokenType": "bearer",
+        "userData": {
+            "id": db_user.id,
+            "username": db_user.username,
+            "status": db_user.status
+        } 
+    }
