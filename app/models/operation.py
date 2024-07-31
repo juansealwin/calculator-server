@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, Float, ForeignKey, DateTime
 from ..database import Base
 from .user import User
+from datetime import datetime
 
 class Operation(Base):
     __tablename__ = "operations"
@@ -18,4 +19,6 @@ class Record(Base):
     amount = Column(Float)
     user_balance = Column(Float)
     operation_response = Column(String)
-    date = Column(String)
+    date = Column(DateTime, default=datetime.utcnow)
+    is_deleted = Column(Boolean, default=False)
+    deleted_at = Column(DateTime, nullable=True)

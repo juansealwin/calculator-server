@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 class OperationBase(BaseModel):
     pass
@@ -24,6 +25,7 @@ class RecordOut(BaseModel):
     amount: float
     user_balance: float
     operation_response: str
+    date: datetime
 
     class Config:
         from_attributes = True

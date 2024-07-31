@@ -7,3 +7,6 @@ class Balance(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UpdateBalanceSchema(BaseModel):
+    amount: float        

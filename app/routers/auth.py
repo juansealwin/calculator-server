@@ -6,7 +6,7 @@ from ..models.balance import Balance
 from ..database import get_db
 from ..utils import get_password_hash, verify_password, create_access_token
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1", tags=["auth"])
 
 @router.post("/register", response_model=UserOut)
 def register(
