@@ -26,6 +26,8 @@ class RecordOut(BaseModel):
     user_balance: float
     operation_response: str
     date: datetime
+    is_deleted: bool
+    deleted_at: Optional[datetime]
 
     class Config:
         from_attributes = True

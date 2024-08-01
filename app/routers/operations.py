@@ -99,7 +99,9 @@ def create_operation(
         amount=result if isinstance(result, (int, float)) else 0,
         user_balance=current_user.balance.amount,
         operation_response=str(result),
-        date=datetime.utcnow()
+        date=datetime.utcnow(),
+        is_deleted = False,
+        deleted_at = None
     )
     db.add(record)
     db.commit()
@@ -126,19 +128,19 @@ def read_records(
     return records
 
 
-@router.delete("/records/{record_id}")
+@router.delete("/records/{record_id}", response_model=RecordOut)
 def delete_record(
     record_id: int, 
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    record = db.query(models.Record).filter(Record.id == record_id, Record.user_id == current_user.id).first()
+    record = db.query(Record).filter(Record.id == record_id, Record.user_id == current_user.id).first()
 
     if record is None:
         raise HTTPException(status_code=404, detail="Record not found")
 
     record.is_deleted = True
-    record.deleted_at = func.now()
+    record.deleted_at = datetime.utcnow()
     db.commit()
 
-    return {"message": "Record soft-deleted successfully"}
+    return record
