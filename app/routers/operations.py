@@ -9,6 +9,8 @@ from typing import List
 import math
 import requests
 from datetime import datetime
+from typing import List, Optional
+from sqlalchemy import asc, desc
 
 router = APIRouter(prefix="/api/v1", tags=["operations"])
 
@@ -116,11 +118,28 @@ def create_operation(
 @router.get("/records", response_model=List[RecordOut])
 def read_records(
     skip: int = 0, 
-    limit: int = 10, 
+    limit: int = 10,
+    search: Optional[str] = None,
+    sort_by: Optional[str] = None,
+    sort_order: Optional[str] = "asc",
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    records = db.query(Record).filter(Record.user_id == current_user.id, Record.is_deleted == False).offset(skip).limit(limit).all()
+    query = db.query(Record).filter(Record.user_id == current_user.id, Record.is_deleted == False)
+
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.filter(
+            Record.operation_response.ilike(search_pattern)
+        )
+    
+    if sort_by:
+        if sort_order == "desc":
+            query = query.order_by(desc(getattr(Record, sort_by)))
+        else:
+            query = query.order_by(asc(getattr(Record, sort_by)))
+    
+    records = query.offset(skip).limit(limit).all()
 
     if not records:
         raise HTTPException(status_code=404, detail="No records found")
