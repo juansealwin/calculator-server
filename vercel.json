@@ -11,9 +11,6 @@
         "src": "/(.*)",
         "dest": "app/main.py"
       }
-    ],
-    "env": {
-      "DATABASE_URL": "@DATABASE_URL"
-    }
+    ]
   }
   
