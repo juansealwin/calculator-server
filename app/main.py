@@ -9,7 +9,8 @@ init_db()
 
 # CORS config
 origins = [
-    "http://localhost:3000",
+    "http://localhost:3000/calculator-app",
+    "https://juansealwin.github.io/calculator-app/"
     # TODO
 ]
 
