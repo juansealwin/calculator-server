@@ -1,16 +1,29 @@
 import os
+import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 Base = declarative_base()
 
-load_dotenv() 
+load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")  
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+DATABASE_URL = os.getenv("DATABASE_URL")
+logger.info(f"Connecting to database at {DATABASE_URL}")
+
+try:
+    connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    engine = create_engine(DATABASE_URL, connect_args=connect_args)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    logger.info("Database connection successful")
+
+except Exception as e:
+    logger.error(f"Database connection failed: {e}")
+    raise
 
 def get_db():
     db = SessionLocal()
@@ -21,4 +34,10 @@ def get_db():
 
 def init_db():
     from .models import user, balance, operation
-    Base.metadata.create_all(bind=engine)
+    try:
+        logger.info("Creating database tables...")
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {e}")
+        raise

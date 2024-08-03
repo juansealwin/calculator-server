@@ -9,9 +9,8 @@ init_db()
 
 # CORS config
 origins = [
-    "http://localhost:3000/calculator-app",
-    "https://juansealwin.github.io/calculator-app/"
-    # TODO
+    "http://localhost:3000",
+    "https://juansealwin.github.io"
 ]
 
 app.add_middleware(
