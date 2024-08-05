@@ -5,6 +5,7 @@ from ..models.user import User
 from ..models.balance import Balance
 from ..database import get_db
 from ..utils import get_password_hash, verify_password, create_access_token
+import re
 
 router = APIRouter(prefix="/api/v1", tags=["auth"])
 
@@ -24,7 +25,6 @@ def register(
     user: UserCreate, 
     db: Session = Depends(get_db)
 ):
-
     if not validate_password(user.password):
         raise HTTPException(
             status_code=400, 
