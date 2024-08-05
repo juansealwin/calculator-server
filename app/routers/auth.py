@@ -8,11 +8,29 @@ from ..utils import get_password_hash, verify_password, create_access_token
 
 router = APIRouter(prefix="/api/v1", tags=["auth"])
 
+def validate_password(password: str) -> bool:
+    if len(password) <= 6:
+        return False
+    if not re.search(r'\d', password):
+        return False
+    if not re.search(r'[A-Za-z]', password):
+        return False
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False
+    return True
+
 @router.post("/register", response_model=UserOut)
 def register(
     user: UserCreate, 
     db: Session = Depends(get_db)
 ):
+
+    if not validate_password(user.password):
+        raise HTTPException(
+            status_code=400, 
+            detail="Password must be more than 6 characters, contain at least one number, one letter, and one special character"
+        )
+
     db_user = db.query(User).filter(User.username == user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
