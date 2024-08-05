@@ -5,8 +5,8 @@ This is the backend for the calculator app.
 ## Setup
 
 1. Clone the repository:
+
 ```
-sh
 git clone https://github.com/your-username/calculator-backend.git
 cd calculator-backend
 ```
